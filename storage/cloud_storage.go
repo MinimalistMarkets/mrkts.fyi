@@ -46,12 +46,16 @@ func (s *CloudStorage) Upload(filename string, page string) error {
 	}
 	defer source.Close()
 
-	w := s.bucket.Object(page).NewWriter(ctx)
+	obj := s.bucket.Object(page)
+	w := obj.NewWriter(ctx)
 	if _, err := io.Copy(w, source); err != nil {
 		return fmt.Errorf("unable to copy file: %v", err)
 	}
 	if err := w.Close(); err != nil {
 		return fmt.Errorf("unable to close file: %v", err)
+	}
+	if err := obj.ACL().Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
+		return fmt.Errorf("unable to set object ACL: %v", err)
 	}
 
 	return nil
