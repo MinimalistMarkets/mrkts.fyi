@@ -3,18 +3,21 @@ package api
 import (
 	"net/http"
 
+	"github.com/MinimalistMarkets/mrkts.fyi/storage"
 	"github.com/alpacahq/alpaca-trade-api-go/v3/marketdata"
 )
 
 type Server struct {
 	listenAddr   string
 	alpacaClient *marketdata.Client
+	storage      *storage.CloudStorage
 }
 
-func NewServer(listenAddr string, alpacaClient *marketdata.Client) *Server {
+func NewServer(listenAddr string, alpacaClient *marketdata.Client, storage *storage.CloudStorage) *Server {
 	return &Server{
 		listenAddr:   listenAddr,
 		alpacaClient: alpacaClient,
+		storage:      storage,
 	}
 }
 
@@ -34,7 +37,7 @@ func (s *Server) handleSync(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sync := NewSync(s.alpacaClient)
+	sync := NewSync(s.alpacaClient, s.storage)
 	if ok := sync.Start(); !ok {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return

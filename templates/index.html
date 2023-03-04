@@ -1,0 +1,19 @@
+{{define "title"}}mrkts.fyi{{end}}
+{{define "scripts"}}{{end}}
+{{define "body"}}
+<div>
+    <h1>mrkts.fyi</h1>
+    <p>Market data for the rest of us.</p>
+    <p>Powered by <a href="https://alpaca.markets">Alpaca</a>.</p>
+    <div>
+        <h2>Stocks</h2>
+        <ul>
+            {{range .}}
+            <li>
+                <p>{{.Symbol}} - {{.Price}}</p>
+            </li>
+            {{end}}
+        </ul>
+    </div>
+</div>
+{{end}}

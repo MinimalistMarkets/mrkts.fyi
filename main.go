@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/MinimalistMarkets/mrkts.fyi/api"
+	"github.com/MinimalistMarkets/mrkts.fyi/storage"
 	"github.com/alpacahq/alpaca-trade-api-go/v3/marketdata"
 	"github.com/joho/godotenv"
 )
@@ -31,12 +32,13 @@ func main() {
 	// Alpaca market data client has no way to verify that the API key and secret are valid.
 	// This is a workaround to verify that the client is configured correctly.
 	if _, err = client.GetLatestBar("AAPL", marketdata.GetLatestBarRequest{}); err != nil {
-		log.Fatal(err)
+		log.Fatalf("failed to create alpaca client: %v", err)
 	}
 
-	server := api.NewServer(":"+port, client)
+	storage := storage.NewCloudStorage()
+	server := api.NewServer(":"+port, client, storage)
 	log.Printf("listening on port %s", port)
 	if err = server.Start(); err != nil {
-		log.Fatal(err)
+		log.Fatalf("server error: %v", err)
 	}
 }
